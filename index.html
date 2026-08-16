@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HVAC Daily Inspection — Abu Arish General Hospital</title>
+<style>
+/* ========== CSS VARIABLES ========== */
+:root{
+  --navy:#0F2A47;
+  --steel:#2C5F8A;
+  --light-blue:#DCE8F2;
+  --gold:#B8860B;
+  --green-bg:#D9F2E1;
+  --green-text:#1E7145;
+  --amber-bg:#FFF1CC;
+  --amber-text:#B8860B;
+  --red-bg:#FBE0E2;
+  --red-text:#B23A48;
+  --gray:#F4F6F8;
+  --white:#FFFFFF;
+  --shadow:0 2px 8px rgba(0,0,0,0.08);
+  --radius:6px;
+  --transition:all 0.2s ease;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:"Segoe UI", system-ui, sans-serif;
+  background:var(--gray);
+  color:var(--navy);
+  min-height:100vh;
+  display:flex;
+}
+
+/* ========== SIDEBAR NAV ========== */
+.sidebar{
+  width:240px;
+  background:var(--navy);
+  color:var(--white);
+  display:flex;
+  flex-direction:column;
+  position:fixed;
+  top:0;left:0;bottom:0;
+  z-index:100;
+}
+
+.sidebar-logo{padding:20px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.1);}
+.sidebar-logo img{width:70px;height:70px;border-radius:50%;object-fit:cover;background:white;padding:3px;}
+.sidebar-logo h3{font-size:14px;margin-top:8px;color:var(--light-blue);}
+
+.sidebar-nav{flex:1;padding:15px 0;}
+.sidebar-nav button{
+  display:flex;align-items:center;gap:12px;width:100%;
+  padding:14px 20px;background:transparent;border:none;
+  color:var(--light-blue);font-size:15px;cursor:pointer;
+  transition:var(--transition);text-align:left;
+}
+.sidebar-nav button:hover{background:rgba(255,255,255,0.08);color:var(--white);}
+.sidebar-nav button.active{background:var(--steel);color:var(--white);border-left:4px solid var(--gold);}
+
+.sidebar-footer{padding:15px;border-top:1px solid rgba(255,255,255,0.1);font-size:11px;color:var(--light-blue);text-align:center;}
+
+/* ========== MAIN CONTENT ========== */
+.main-content{flex:1;margin-left:240px;padding:20px;min-height:100vh;}
+
+.app-header{
+  background:var(--white);border-radius:var(--radius);
+  padding:20px;box-shadow:var(--shadow);margin-bottom:20px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+}
+.app-header h1{font-size:22px;color:var(--navy);}
+.app-header p{font-size:13px;color:var(--steel);}
+
+/* ========== TAB CONTENT ========== */
+.tab-content{display:none;}
+.tab-content.active{display:block;animation:fadeIn 0.3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* ========== CARDS ========== */
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:20px;}
+.card-title{font-size:16px;font-weight:700;color:var(--steel);margin-bottom:15px;border-bottom:2px solid var(--light-blue);padding-bottom:10px;}
+
+/* ========== BUTTONS ========== */
+.btn{
+  padding:10px 20px;border-radius:var(--radius);border:none;
+  font-size:14px;font-weight:600;cursor:pointer;transition:var(--transition);
+}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+.btn-primary{background:var(--steel);color:var(--white);}
+.btn-success{background:var(--green-text);color:var(--white);}
+.btn-warning{background:var(--amber-text);color:var(--white);}
+.btn-danger{background:var(--red-text);color:var(--white);}
+.btn-outline{background:transparent;border:1px solid var(--steel);color:var(--steel);}
+
+/* ========== FORM STYLES ========== */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px;margin-bottom:20px;}
+.form-group label{display:block;font-weight:600;margin-bottom:5px;font-size:13px;color:var(--steel);}
+.form-group input,.form-group select,.form-group textarea{
+  width:100%;padding:10px;border:1px solid #ccc;border-radius:var(--radius);
+  font-size:14px;font-family:inherit;
+}
+.form-group textarea{resize:vertical;min-height:60px;}
+
+/* ========== INSPECTION TABLE ========== */
+.inspection-table{width:100%;border-collapse:collapse;font-size:13px;}
+.inspection-table th{
+  background:var(--navy);color:var(--white);padding:12px 10px;
+  text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;
+}
+.inspection-table td{padding:8px 10px;border-bottom:1px solid #e0e0e0;}
+.inspection-table tr:nth-child(even){background:var(--gray);}
+.inspection-table tr:hover{background:var(--light-blue);}
+
+select.status-good{background:var(--green-bg);color:var(--green-text);font-weight:600;}
+select.status-warning{background:var(--amber-bg);color:var(--amber-text);font-weight:600;}
+select.status-danger{background:var(--red-bg);color:var(--red-text);font-weight:600;}
+select.status-default{background:var(--gray);color:#555;}
+
+/* ========== BADGES ========== */
+.badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.badge-high{background:var(--red-bg);color:var(--red-text);}
+.badge-medium{background:var(--amber-bg);color:var(--amber-text);}
+.badge-low{background:var(--green-bg);color:var(--green-text);}
+
+/* ========== KPI CARDS ========== */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:20px;}
+.kpi-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;text-align:center;}
+.kpi-card h2{font-size:36px;color:var(--navy);margin-bottom:5px;}
+.kpi-card p{font-size:12px;color:var(--steel);text-transform:uppercase;letter-spacing:0.5px;}
+
+/* ========== UNITS BOARD ========== */
+.units-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
+.unit-card{
+  padding:12px;border-radius:var(--radius);border:2px solid #e0e0e0;
+  background:var(--white);transition:var(--transition);cursor:pointer;
+}
+.unit-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+.unit-card.green{border-color:var(--green-text);}
+.unit-card.amber{border-color:var(--amber-text);}
+.unit-card.red{border-color:var(--red-text);}
+.unit-card .unit-name{font-weight:700;font-size:13px;margin-bottom:5px;}
+.unit-card .unit-meta{font-size:11px;color:var(--steel);}
+
+/* ========== HISTORY TABLE ========== */
+.history-table{width:100%;border-collapse:collapse;font-size:13px;}
+.history-table th{background:var(--navy);color:var(--white);padding:10px;text-align:left;font-size:12px;}
+.history-table td{padding:10px;border-bottom:1px solid #e0e0e0;}
+.history-table tr:nth-child(even){background:var(--gray);}
+
+/* ========== MODAL ========== */
+.modal-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.5);z-index:1000;display:none;
+  justify-content:center;align-items:center;
+}
+.modal-overlay.active{display:flex;}
+.modal{
+  background:var(--white);border-radius:var(--radius);
+  padding:25px;max-width:700px;width:90%;max-height:80vh;overflow-y:auto;
+}
+
+/* ========== TOAST ========== */
+.toast-container{position:fixed;bottom:20px;right:20px;z-index:9999;}
+.toast{background:var(--navy);color:var(--white);padding:14px 20px;border-radius:var(--radius);margin-top:10px;animation:slideIn 0.3s ease;font-size:14px;}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+/* ========== PRINT STYLES ========== */
+@media print{
+  .sidebar,.app-header,.btn,.toast-container,#header-clock{display:none !important;}
+  .main-content{margin:0;padding:0;}
+  body{background:white;}
+  .card{box-shadow:none;border:1px solid #ccc;page-break-inside:avoid;}
+  @page{size:A4;margin:15mm;}
+}
+
+/* ========== RESPONSIVE ========== */
+@media(max-width:768px){
+  .sidebar{width:100%;height:auto;position:fixed;bottom:0;top:auto;flex-direction:row;z-index:100;}
+  .sidebar-logo{display:none;}
+  .sidebar-nav{display:flex;padding:0;}
+  .sidebar-nav button{flex:1;justify-content:center;padding:10px 5px;font-size:11px;flex-direction:column;gap:2px;}
+  .sidebar-footer{display:none;}
+  .main-content{margin-left:0;margin-bottom:60px;padding:10px;}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <img id="sidebar-logo-img" src="https://alhqyq.com/contents/newsm/18346_0.jpg" alt="شعار تجمع جازان الصحي">
+    <h3>Abu Arish General Hospital</h3>
+  </div>
+  <nav class="sidebar-nav">
+    <button class="active" data-tab="inspection" onclick="switchTab('inspection')">📋 New Inspection</button>
+    <button data-tab="history" onclick="switchTab('history')">📁 History</button>
+    <button data-tab="dashboard" onclick="switchTab('dashboard')">📊 Dashboard</button>
+    <button data-tab="settings" onclick="switchTab('settings')">⚙ Settings</button>
+  </nav>
+  <div class="sidebar-footer">HVAC Engineering & Maintenance<br>Version 1.0 — July 2026</div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main-content">
+  <header class="app-header">
+    <div>
+      <h1>HVAC Daily Inspection</h1>
+      <p>Engineering & Maintenance Department — Abu Arish General Hospital</p>
+    </div>
+    <div id="header-clock" style="font-size:14px;color:var(--steel);font-weight:600;"></div>
+  </header>
+
+  <div id="tab-inspection" class="tab-content active"><div class="card"><div class="card-title">Daily Inspection Form</div><div id="inspection-form-container">Loading form...</div></div></div>
+  <div id="tab-history" class="tab-content"><div class="card"><div class="card-title">Inspection History</div><div id="history-container">Loading history...</div></div></div>
+  <div id="tab-dashboard" class="tab-content"><div class="card"><div class="card-title">Dashboard & Analytics</div><div id="dashboard-container">Loading dashboard...</div></div></div>
+  <div id="tab-settings" class="tab-content"><div class="card"><div class="card-title">Settings</div><div id="settings-container">Loading settings...</div></div></div>
+</main>
+
+<div class="toast-container" id="toast-container"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<script>
+/* ========== CORE APP ========== */
+const App = {
+  state: {
+    currentTab: 'inspection',
+    settings: {
+      hospitalName: 'Abu Arish General Hospital',
+      department: 'Engineering & Maintenance — HVAC Section',
+      logo: 'https://alhqyq.com/contents/newsm/18346_0.jpg',
+      printArabic: false,
+      version: '1.0',
+      lastBackup: null
+    },
+    technicians: [
+      {name:'Najam-ud-Din Zakirullah', shift:'A'},
+      {name:'Arshad Hussain Dilshad', shift:'A'},
+      {name:'Mohammad Zafar Saleek', shift:'B'},
+      {name:'Imam Bahai', shift:'B'},
+      {name:'Danish', shift:'B'},
+      {name:'Jaffar', shift:'B'},
+      {name:'Mumtaz Afi Sheikh', shift:'C'}
+    ],
+    units: [
+      {name:'I.C.U ROOM-PY100', model:'PY100', serial:'CHHBD 0019M', location:'I.C.U ROOM', priority:'High'},
+      {name:'I.C.U-CY240', model:'CY240', serial:'CMGZV-0009M', location:'I.C.U', priority:'High'},
+      {name:'I.C.U NEW-CTX025', model:'CTX025', serial:'HSA101-0092236', location:'I.C.U NEW', priority:'High'},
+      {name:'O.R-1-CTX050', model:'CTX050', serial:'HSA101-0092530', location:'O.R-1', priority:'High'},
+      {name:'O.R-2-CTX050', model:'CTX050', serial:'HSA101-0092531', location:'O.R-2', priority:'High'},
+      {name:'O.R CENTRAL-LDX040', model:'LDX040', serial:'BGLZP0002M', location:'O.R CENTRAL', priority:'High'},
+      {name:'O.R-1 CORRIDOR-CTX030', model:'CTX030', serial:'HSA101-0092232', location:'O.R-1 CORRIDOR', priority:'High'},
+      {name:'MEDICAL GAS-CY100', model:'CY100', serial:'CMHBL0006M', location:'MEDICAL GAS', priority:'High'},
+      {name:'X-RAY-CY240', model:'CY240', serial:'CMCVA 0128M', location:'X-RAY', priority:'High'},
+      {name:'X-RAY-CY240 (2)', model:'CY240', serial:'FFCMCVA0128M', location:'X-RAY (2)', priority:'High'},
+      {name:'LAB-CTX040', model:'CTX040', serial:'HSA101-60192236', location:'LAB', priority:'High'},
+      {name:'PHARMACY-PTX100', model:'PTX100', serial:'BGTZP0019M', location:'PHARMACY', priority:'Medium'},
+      {name:'PHARMACY 1ST FL-PTX016', model:'PTX016', serial:'LMHBN 0004M', location:'PHARMACY 1ST FL', priority:'Medium'},
+      {name:'OLD E.R-PRX050', model:'PRX050', serial:'CMCVH0012M', location:'OLD E.R', priority:'Medium'},
+      {name:'F.M.E.R-PTX030', model:'PTX030', serial:'HSA101-0021517', location:'F.M.E.R', priority:'Medium'},
+      {name:'M.E.R-PTX030', model:'PTX030', serial:'HSA101-0021516', location:'M.E.R', priority:'Medium'},
+      {name:'O.P.D NEW-CTX016', model:'CTX016', serial:'HSA101-60192235', location:'O.P.D NEW', priority:'Medium'},
+      {name:'D.R NEW-CTX030', model:'CTX030', serial:'HSA101-60192234', location:'D.R NEW', priority:'Medium'},
+      {name:'CSSD-CTX030', model:'CTX030', serial:'HSA101-0092233', location:'CSSD', priority:'Medium'},
+      {name:'PEDIA-PTX050', model:'PTX050', serial:'LMCVD0002M', location:'PEDIA', priority:'Medium'},
+      {name:'CORRIDOR-PS300', model:'PS300', serial:'CMCVL0010M', location:'CORRIDOR', priority:'Low'},
+      {name:'F.W-PRX050', model:'PRX050', serial:'LMCVD0001M', location:'F.W', priority:'Low'},
+      {name:'M.W-PRX050', model:'PRX050', serial:'LMCVD0003M', location:'M.W', priority:'Low'},
+      {name:'DIRECTOR (NEW)-CTX070', model:'CTX070', serial:'HSA101-0092237', location:'DIRECTOR (NEW)', priority:'Low'},
+      {name:'LAUNDRY-CY300', model:'CY300', serial:'KMHBV0002M', location:'LAUNDRY', priority:'Low'},
+      {name:'MEDICAL STORE (1)-PY340', model:'PY340', serial:'CMAZJ0012M', location:'MEDICAL STORE (1)', priority:'Low'},
+      {name:'MEDICAL STORE (2)-PY340', model:'PY340', serial:'CMAZJ0013M', location:'MEDICAL STORE (2)', priority:'Low'},
+      {name:'MEDICAL STORE (3)-CTX030', model:'CTX030', serial:'HSA1010092230', location:'MEDICAL STORE (3)', priority:'Low'},
+      {name:'MEDICAL STORE (4)-PY340', model:'PY340', serial:'CMAZJ0015M', location:'MEDICAL STORE (4)', priority:'Low'}
+    ],
+    inspectionItems: [
+      {id:1, item:'Unit Status', options:['RUN','STOPPED','OUT OF ORDER'], good:['RUN']},
+      {id:2, item:'Control Panel', options:['WORKING','TROUBLING','DAMAGED'], good:['WORKING']},
+      {id:3, item:'Power Supply & Wiring', options:['NORMAL','REWIRING','BURN'], good:['NORMAL']},
+      {id:4, item:'Wiring Cables', options:['NORMAL','DAMAGED','REWIRING'], good:['NORMAL']},
+      {id:5, item:'Main MCB Status', options:['NORMAL','WORKING','DAMAGED'], good:['NORMAL','WORKING']},
+      {id:6, item:'Compressor Contactor', options:['WORKING','SPARKING','DAMAGED'], good:['WORKING']},
+      {id:7, item:'Condenser Contactor', options:['WORKING','SPARKING','DAMAGED'], good:['WORKING']},
+      {id:8, item:'Thermostat', options:['WORKING','BYPASS','DAMAGED'], good:['WORKING']},
+      {id:9, item:'Voltage Safety Sensor', options:['WORKING','BYPASS','N/A'], good:['WORKING','N/A']},
+      {id:10, item:'Compressor (1)', options:['WORKING','BAD SOUND','DAMAGED'], good:['WORKING']},
+      {id:11, item:'Compressor (2)', options:['WORKING','BAD SOUND','DAMAGED'], good:['WORKING']},
+      {id:12, item:'Vibration Isolator', options:['NORMAL','PINCH','DAMAGED'], good:['NORMAL']},
+      {id:13, item:'Pressure Switch LP/HP', options:['WORKING','BYPASS','DAMAGED'], good:['WORKING']},
+      {id:14, item:'Air Pressure Switch', options:['WORKING','N/A','BYPASS'], good:['WORKING','N/A']},
+      {id:15, item:'Condenser Condition', options:['NORMAL','LEAKING','FINS DAMAGE'], good:['NORMAL']},
+      {id:16, item:'Condenser Fan/Motor', options:['NORMAL','SOUNDING','STOP'], good:['NORMAL']},
+      {id:17, item:'Blower Status', options:['WORKING','SOUND','VIBRATION'], good:['WORKING']},
+      {id:18, item:'Blower Motor', options:['WORKING','SOUND','DAMAGED'], good:['WORKING']},
+      {id:19, item:'Expansion Valve', options:['NORMAL','FLUTING','DAMAGED'], good:['NORMAL']},
+      {id:20, item:'Heater', options:['WORKING','TROUBLING','BYPASS'], good:['WORKING']},
+      {id:21, item:'Heater Safety', options:['WORKING','TROUBLING','BYPASS'], good:['WORKING']},
+      {id:22, item:'Filter Dryer Core', options:['NORMAL','WARM','CHILLED'], good:['NORMAL']},
+      {id:23, item:'Temperature Gauges', options:['WORKING','DAMAGE','N/A'], good:['WORKING','N/A']},
+      {id:24, item:'Duct Insulation', options:['NORMAL','BROKEN','DAMAGED'], good:['NORMAL']},
+      {id:25, item:'Unit Body Condition', options:['NORMAL','REPAIR','DAMAGED'], good:['NORMAL']},
+      {id:26, item:'General Cleanliness', options:['CLEAN','NEEDED','CHEMICAL CLEANING'], good:['CLEAN']}
+    ]
+  },
+
+  db: {
+    records: [],
+
+    loadAll(){
+      try{
+        const raw = localStorage.getItem('hvac_records');
+        this.records = raw ? JSON.parse(raw) : [];
+      }catch(e){this.records = [];}
+      return this.records;
+    },
+
+    saveAll(){
+      try{
+        localStorage.setItem('hvac_records', JSON.stringify(this.records));
+        return true;
+      }catch(e){
+        showToast('⚠️ Failed to save. Storage may be full.');
+        return false;
+      }
+    },
+
+    addRecord(record){
+      this.loadAll();
+      const dup = this.records.find(r => r.date === record.date && r.unit === record.unit && r.shift === record.shift);
+      if(dup) return {success:false, reason:'duplicate', existingRecord:dup};
+      record.id = App.utils.uuid();
+      record.savedAt = new Date().toISOString();
+      record.printedAt = null;
+      this.records.unshift(record);
+      this.saveAll();
+      return {success:true, record:record};
+    },
+
+    deleteRecord(id){
+      this.loadAll();
+      this.records = this.records.filter(r => r.id !== id);
+      this.saveAll();
+    },
+
+    getRecordById(id){
+      this.loadAll();
+      return this.records.find(r => r.id === id);
+    },
+
+    getLastForUnit(unitName){
+      this.loadAll();
+      return this.records.find(r => r.unit === unitName) || null;
+    },
+
+    exportJSON(){
+      this.loadAll();
+      const data = {exportedAt:new Date().toISOString(), records:this.records, settings:App.state.settings};
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'HVAC_Records_Backup_' + App.utils.formatDate(new Date()) + '.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('✅ Data exported successfully');
+    },
+
+    importJSON(file){
+      const reader = new FileReader();
+      reader.onload = function(e){
+        try{
+          const data = JSON.parse(e.target.result);
+          if(data.records && Array.isArray(data.records)){
+            App.db.records = data.records;
+            App.db.saveAll();
+            if(data.settings){
+              App.state.settings = {...App.state.settings, ...data.settings};
+              App.db.saveSettings(App.state.settings);
+            }
+            App.ui.renderHistory();
+            App.ui.renderDashboard();
+            showToast('✅ Data imported successfully (' + data.records.length + ' records)');
+          }else{showToast('❌ Invalid file format');}
+        }catch(err){showToast('❌ Error parsing file');}
+      };
+      reader.readAsText(file);
+    },
+
+    clearAll(){
+      localStorage.removeItem('hvac_records');
+      localStorage.removeItem('hvac_draft');
+      this.records = [];
+      showToast('🗑 All data cleared');
+      App.ui.renderHistory();
+      App.ui.renderDashboard();
+    },
+
+    saveDraft(draft){
+      try{localStorage.setItem('hvac_draft', JSON.stringify(draft));}catch(e){}
+    },
+
+    loadDraft(){
+      try{
+        const raw = localStorage.getItem('hvac_draft');
+        return raw ? JSON.parse(raw) : null;
+      }catch(e){return null;}
+    },
+
+    clearDraft(){localStorage.removeItem('hvac_draft');},
+
+    saveSettings(s){try{localStorage.setItem('hvac_settings', JSON.stringify(s));}catch(e){}},
+    loadSettings(){try{const raw = localStorage.getItem('hvac_settings'); return raw ? JSON.parse(raw) : {};}catch(e){return {};}}
+  },
+
+  ui: {
+    renderForm(){},
+    renderHistory(){},
+    renderDashboard(){},
+    renderSettings(){}
+  },
+
+  print: {},
+
+  utils: {
+    uuid(){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {const r = Math.random()*16|0, v = c==='x'?r:(r&0x3|0x8); return v.toString(16);});},
+    formatDate(d){return d.toISOString().split('T')[0];},
+    classifyStatus(val, goodArr){
+      if(goodArr.includes(val)) return 'good';
+      if(['BYPASS','TROUBLING','SOUND','SOUNDING','NEEDED','WARM','REWIRING','FLUTING','REPAIR','PINCH','VIBRATION','LEAKING','BROKEN'].includes(val)) return 'warning';
+      return 'danger';
+    },
+    debounce(fn, ms){let t; return (...args)=>{clearTimeout(t); t=setTimeout(()=>fn(...args), ms);};}
+  }
+};
+
+/* ========== TAB SWITCHING ========== */
+function switchTab(tab){
+  App.state.currentTab = tab;
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.sidebar-nav button').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
+  if(tab === 'inspection') App.ui.renderForm();
+  if(tab === 'history') App.ui.renderHistory();
+  if(tab === 'dashboard') App.ui.renderDashboard();
+  if(tab === 'settings') App.ui.renderSettings();
+}
+
+/* ========== TOAST ========== */
+function showToast(msg){
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = msg;
+  container.appendChild(toast);
+  setTimeout(()=>{toast.remove();}, 3000);
+}
+
+/* ========== CLOCK ========== */
+function updateClock(){
+  const now = new Date();
+  document.getElementById('header-clock').textContent = now.toLocaleString('en-GB', {dateStyle:'full', timeStyle:'medium'});
+}
+setInterval(updateClock, 1000);
+
+/* ========== MODAL ========== */
+function openModal(html){
+  document.getElementById('modal-content').innerHTML = html;
+  document.getElementById('modal-overlay').classList.add('active');
+}
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('active');
+}
+document.getElementById('modal-overlay').addEventListener('click', function(e){
+  if(e.target === this) closeModal();
+});
+
+/* ========== INSPECTION FORM ========== */
+App.ui.renderForm = function(){
+  const container = document.getElementById('inspection-form-container');
+  const items = App.state.inspectionItems;
+  const technicians = App.state.technicians;
+  const units = App.state.units;
+
+  const draft = App.db.loadDraft();
+  const todayStr = App.utils.formatDate(new Date());
+
+  let html = '';
+
+  if(draft){
+    html += `<div style="background:var(--amber-bg);color:var(--amber-text);padding:10px;border-radius:var(--radius);margin-bottom:15px;font-weight:600;">📝 Draft restored from previous session</div>`;
+  }
+
+  html += `
+  <div class="form-grid">
+    <div class="form-group">
+      <label>Date</label>
+      <input type="date" id="form-date" value="${draft ? draft.date : todayStr}">
+    </div>
+    <div class="form-group">
+      <label>Shift</label>
+      <select id="form-shift" onchange="onShiftChange()">
+        <option value="">Select Shift...</option>
+        <option value="A" ${draft && draft.shift==='A' ? 'selected' : ''}>🟢 A (Morning 07:00-15:00)</option>
+        <option value="B" ${draft && draft.shift==='B' ? 'selected' : ''}>🟡 B (Evening 15:00-23:00)</option>
+        <option value="C" ${draft && draft.shift==='C' ? 'selected' : ''}>🟠 C (Night 23:00-07:00)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Technician</label>
+      <select id="form-technician">
+        <option value="">Select Technician...</option>
+        ${technicians.map(t => `<option value="${t.name}" data-shift="${t.shift}" ${draft && draft.technician===t.name ? 'selected' : ''}>${t.name} (${t.shift})</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Unit</label>
+      <select id="form-unit" onchange="onUnitChange()">
+        <option value="">Select Unit...</option>
+        ${units.map(u => `<option value="${u.name}" ${draft && draft.unit===u.name ? 'selected' : ''}>${u.name}</option>`).join('')}
+      </select>
+    </div>
+  </div>
+
+  <div class="form-grid" id="unit-details" style="display:${draft && draft.unit ? 'grid' : 'none'};background:var(--light-blue);padding:15px;border-radius:var(--radius);margin-bottom:15px;">
+    <div class="form-group"><label>Location</label><input type="text" id="form-location" readonly value="${draft ? draft.location : ''}"></div>
+    <div class="form-group"><label>Model</label><input type="text" id="form-model" readonly value="${draft ? draft.model : ''}"></div>
+    <div class="form-group"><label>Serial</label><input type="text" id="form-serial" readonly value="${draft ? draft.serial : ''}"></div>
+    <div class="form-group"><label>Priority</label><input type="text" id="form-priority" readonly value="${draft ? draft.priority : ''}"></div>
+  </div>
+
+  <div id="issue-counter" style="text-align:center;font-size:18px;font-weight:700;margin-bottom:15px;color:var(--green-text);">✅ All Items OK — 0 Issues</div>
+
+  <div style="overflow-x:auto;">
+  <table class="inspection-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Inspection Item</th>
+        <th style="width:250px;">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${items.map(item => `
+        <tr>
+          <td>${item.id}</td>
+          <td>${item.item}</td>
+          <td>
+            <select class="status-select status-default" data-item="${item.item}" onchange="onStatusChange(this)" style="width:100%;padding:8px;border-radius:var(--radius);border:1px solid #ccc;">
+              <option value="">-- Select --</option>
+              ${item.options.map(opt => `<option value="${opt}" ${draft && draft.statuses && draft.statuses[item.item]===opt ? 'selected' : ''}>${opt}</option>`).join('')}
+            </select>
+          </td>
+        </tr>
+      `).join('')}
+    </tbody>
+  </table>
+  </div>
+
+  <div class="form-group" style="margin-top:15px;">
+    <label>Notes (optional)</label>
+    <textarea id="form-notes" placeholder="Any additional notes...">${draft ? draft.notes || '' : ''}</textarea>
+  </div>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px;">
+    <button class="btn btn-success" onclick="saveRecord()">✅ Save Record</button>
+    <button class="btn btn-primary" onclick="printCurrentRecord()">🖨️ Print / Export PDF</button>
+    <button class="btn btn-warning" onclick="resetForm()">🔄 Reset Form</button>
+    <button class="btn btn-outline" onclick="copyPrevious()">📋 Copy Previous</button>
+  </div>
+  `;
+
+  container.innerHTML = html;
+
+  if(draft && draft.statuses){
+    document.querySelectorAll('.status-select').forEach(sel => {
+      const val = sel.value;
+      if(val) applySelectColor(sel);
+    });
+  }
+};
+
+/* ========== FORM FUNCTIONS ========== */
+function onShiftChange(){
+  const shift = document.getElementById('form-shift').value;
+  const techSelect = document.getElementById('form-technician');
+  const techs = App.state.technicians.filter(t => t.shift === shift);
+  techSelect.innerHTML = '<option value="">Select Technician...</option>' + 
+    techs.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
+  autoSaveDraft();
+}
+
+function onUnitChange(){
+  const unitName = document.getElementById('form-unit').value;
+  const unit = App.state.units.find(u => u.name === unitName);
+  if(unit){
+    document.getElementById('form-location').value = unit.location;
+    document.getElementById('form-model').value = unit.model;
+    document.getElementById('form-serial').value = unit.serial;
+    document.getElementById('form-priority').value = unit.priority;
+    document.getElementById('unit-details').style.display = 'grid';
+  }
+  autoSaveDraft();
+}
+
+function onStatusChange(selectEl){
+  applySelectColor(selectEl);
+  updateIssueCounter();
+  autoSaveDraft();
+}
+
+function applySelectColor(sel){
+  const itemName = sel.dataset.item;
+  const item = App.state.inspectionItems.find(i => i.item === itemName);
+  const val = sel.value;
+  sel.className = 'status-select';
+  if(!val){
+    sel.classList.add('status-default');
+  }else{
+    const classification = App.utils.classifyStatus(val, item.good);
+    sel.classList.add('status-' + classification);
+  }
+}
+
+function updateIssueCounter(){
+  const selects = document.querySelectorAll('.status-select');
+  let issues = 0;
+  selects.forEach(sel => {
+    const itemName = sel.dataset.item;
+    const item = App.state.inspectionItems.find(i => i.item === itemName);
+    if(sel.value && !item.good.includes(sel.value)) issues++;
+  });
+  const counter = document.getElementById('issue-counter');
+  if(issues === 0){
+    counter.textContent = '✅ All Items OK — 0 Issues';
+    counter.style.color = 'var(--green-text)';
+  }else if(issues <= 3){
+    counter.textContent = '⚠️ ' + issues + ' Issue(s) Found';
+    counter.style.color = 'var(--amber-text)';
+  }else{
+    counter.textContent = '🔴 ' + issues + ' Issues Found — Critical';
+    counter.style.color = 'var(--red-text)';
+  }
+}
+
+function getFormData(){
+  const date = document.getElementById('form-date').value;
+  const shift = document.getElementById('form-shift').value;
+  const technician = document.getElementById('form-technician').value;
+  const unit = document.getElementById('form-unit').value;
+  const location = document.getElementById('form-location').value;
+  const model = document.getElementById('form-model').value;
+  const serial = document.getElementById('form-serial').value;
+  const priority = document.getElementById('form-priority').value;
+  const notes = document.getElementById('form-notes').value;
+
+  const statuses = {};
+  document.querySelectorAll('.status-select').forEach(sel => {
+    statuses[sel.dataset.item] = sel.value;
+  });
+
+  let issueCount = 0;
+  App.state.inspectionItems.forEach(item => {
+    const val = statuses[item.item];
+    if(val && !item.good.includes(val)) issueCount++;
+  });
+
+  let overallCondition = 'EXCELLENT';
+  if(issueCount === 1) overallCondition = 'GOOD';
+  if(issueCount >= 2 && issueCount <= 4) overallCondition = 'NEEDS ATTENTION';
+  if(issueCount > 4) overallCondition = 'CRITICAL';
+
+  return {date, shift, technician, unit, location, model, serial, priority, statuses, notes, issueCount, overallCondition};
+}
+
+function saveRecord(){
+  const data = getFormData();
+  if(!data.date || !data.shift || !data.technician || !data.unit){
+    showToast('⚠️ Please fill in Date, Shift, Technician, and Unit');
+    return;
+  }
+  const result = App.db.addRecord(data);
+  if(result.success){
+    App.db.clearDraft();
+    showToast('✅ Record saved successfully');
+    App.ui.renderForm();
+  }else if(result.reason === 'duplicate'){
+    if(confirm('⚠️ A record already exists for this Date + Unit + Shift. Overwrite it?')){
+      App.db.deleteRecord(result.existingRecord.id);
+      const retry = App.db.addRecord(data);
+      if(retry.success){
+        App.db.clearDraft();
+        showToast('✅ Record overwritten successfully');
+        App.ui.renderForm();
+      }
+    }
+  }
+}
+
+function resetForm(){
+  if(confirm('Are you sure you want to clear the form?')){
+    App.db.clearDraft();
+    App.ui.renderForm();
+  }
+}
+
+function copyPrevious(){
+  const unit = document.getElementById('form-unit').value;
+  if(!unit){
+    showToast('⚠️ Select a Unit first');
+    return;
+  }
+  const last = App.db.getLastForUnit(unit);
+  if(last){
+    document.querySelectorAll('.status-select').forEach(sel => {
+      const itemName = sel.dataset.item;
+      sel.value = last.statuses[itemName] || '';
+      if(sel.value) applySelectColor(sel);
+    });
+    updateIssueCounter();
+    showToast('📋 Copied from last inspection for this unit');
+  }else{
+    showToast('ℹ️ No previous record for this unit');
+  }
+}
+
+/* ========== AUTO-SAVE DRAFT ========== */
+function autoSaveDraft(){
+  const data = getFormData();
+  App.db.saveDraft(data);
+}
+setInterval(autoSaveDraft, 30000);
+
+/* ========== HISTORY TAB ========== */
+App.ui.renderHistory = function(){
+  const container = document.getElementById('history-container');
+  const records = App.db.loadAll();
+
+  if(records.length === 0){
+    container.innerHTML = '<p style="text-align:center;color:var(--steel);padding:30px;">No records found. Complete an inspection first.</p>';
+    return;
+  }
+
+  let html = `
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px;align-items:center;">
+    <input type="date" id="hist-date-from" style="padding:8px;border:1px solid #ccc;border-radius:var(--radius);" onchange="renderHistoryFiltered()">
+    <input type="date" id="hist-date-to" style="padding:8px;border:1px solid #ccc;border-radius:var(--radius);" onchange="renderHistoryFiltered()">
+    <select id="hist-unit" style="padding:8px;border:1px solid #ccc;border-radius:var(--radius);" onchange="renderHistoryFiltered()">
+      <option value="">All Units</option>
+      ${App.state.units.map(u => `<option value="${u.name}">${u.name}</option>`).join('')}
+    </select>
+    <select id="hist-shift" style="padding:8px;border:1px solid #ccc;border-radius:var(--radius);" onchange="renderHistoryFiltered()">
+      <option value="">All Shifts</option>
+      <option value="A">🟢 A</option>
+      <option value="B">🟡 B</option>
+      <option value="C">🟠 C</option>
+    </select>
+    <input type="text" id="hist-search" placeholder="🔍 Search..." style="padding:8px;border:1px solid #ccc;border-radius:var(--radius);flex:1;min-width:150px;" oninput="renderHistoryFiltered()">
+    <button class="btn btn-outline" onclick="App.db.exportJSON()">📥 Export CSV</button>
+  </div>
+
+  <div style="overflow-x:auto;">
+  <table class="history-table">
+    <thead>
+      <tr><th>Date</th><th>Shift</th><th>Tech</th><th>Unit</th><th>Issues</th><th>Condition</th><th>Actions</th></tr>
+    </thead>
+    <tbody id="history-tbody">
+      ${renderHistoryRows(records)}
+    </tbody>
+  </table>
+  </div>
+  <p id="history-count" style="margin-top:10px;color:var(--steel);font-size:13px;">Total: ${records.length} records</p>
+  `;
+
+  container.innerHTML = html;
+};
+
+function renderHistoryRows(records){
+  return records.map(r => {
+    const shiftIcon = r.shift === 'A' ? '🟢' : r.shift === 'B' ? '🟡' : '🟠';
+    const conditionColor = r.overallCondition === 'EXCELLENT' ? 'var(--green-text)' : 
+                           r.overallCondition === 'GOOD' ? 'var(--steel)' : 
+                           r.overallCondition === 'NEEDS ATTENTION' ? 'var(--amber-text)' : 'var(--red-text)';
+    return `<tr>
+      <td>${r.date}</td>
+      <td>${shiftIcon} ${r.shift}</td>
+      <td>${r.technician}</td>
+      <td>${r.unit}</td>
+      <td style="font-weight:700;color:${r.issueCount > 0 ? 'var(--red-text)' : 'var(--green-text)'}">${r.issueCount === 0 ? '✅ 0' : '⚠️ ' + r.issueCount}</td>
+      <td style="color:${conditionColor};font-weight:600;">${r.overallCondition}</td>
+      <td>
+        <button class="btn btn-outline" onclick="viewRecord('${r.id}')" style="padding:5px 10px;font-size:12px;">👁</button>
+        <button class="btn btn-primary" onclick="printRecord('${r.id}')" style="padding:5px 10px;font-size:12px;">🖨</button>
+        <button class="btn btn-danger" onclick="deleteRecordConfirm('${r.id}')" style="padding:5px 10px;font-size:12px;">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderHistoryFiltered(){
+  const records = App.db.loadAll();
+  const from = document.getElementById('hist-date-from').value;
+  const to = document.getElementById('hist-date-to').value;
+  const unit = document.getElementById('hist-unit').value;
+  const shift = document.getElementById('hist-shift').value;
+  const search = document.getElementById('hist-search').value.toLowerCase();
+
+  let filtered = records;
+  if(from) filtered = filtered.filter(r => r.date >= from);
+  if(to) filtered = filtered.filter(r => r.date <= to);
+  if(unit) filtered = filtered.filter(r => r.unit === unit);
+  if(shift) filtered = filtered.filter(r => r.shift === shift);
+  if(search) filtered = filtered.filter(r => r.unit.toLowerCase().includes(search) || r.technician.toLowerCase().includes(search));
+
+  document.getElementById('history-tbody').innerHTML = renderHistoryRows(filtered);
+  document.getElementById('history-count').textContent = 'Total: ' + filtered.length + ' records (filtered)';
+}
+
+function viewRecord(id){
+  const r = App.db.getRecordById(id);
+  if(!r) return;
+  let html = `
+    <h3 style="color:var(--navy);margin-bottom:15px;">📋 Inspection Details</h3>
+    <p style="margin-bottom:10px;"><strong>Date:</strong> ${r.date} &nbsp;|&nbsp; <strong>Shift:</strong> ${r.shift} &nbsp;|&nbsp; <strong>Technician:</strong> ${r.technician}</p>
+    <p style="margin-bottom:15px;"><strong>Unit:</strong> ${r.unit} &nbsp;|&nbsp; <strong>Model:</strong> ${r.model} &nbsp;|&nbsp; <strong>Serial:</strong> ${r.serial}</p>
+    <table class="inspection-table">
+      <thead><tr><th>#</th><th>Item</th><th>Status</th></tr></thead>
+      <tbody>
+        ${App.state.inspectionItems.map(item => {
+          const val = r.statuses[item.item] || 'N/A';
+          const cls = val && item.good.includes(val) ? 'status-good' : val && val !== 'N/A' ? 'status-warning' : 'status-default';
+          return `<tr><td>${item.id}</td><td>${item.item}</td><td><span class="${cls}" style="padding:4px 10px;border-radius:4px;">${val}</span></td></tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+    <p style="margin-top:15px;"><strong>Issue Count:</strong> ${r.issueCount}</p>
+    <p><strong>Overall:</strong> ${r.overallCondition}</p>
+    ${r.notes ? `<p><strong>Notes:</strong> ${r.notes}</p>` : ''}
+    <button class="btn btn-primary" onclick="closeModal()" style="margin-top:15px;">Close</button>
+  `;
+  openModal(html);
+}
+
+function deleteRecordConfirm(id){
+  if(confirm('Delete this record?')){
+    App.db.deleteRecord(id);
+    showToast('🗑 Record deleted');
+    App.ui.renderHistory();
+    App.ui.renderDashboard();
+  }
+}
+
+/* ========== PRINT ========== */
+App.print.generatePrintHTML = function(record){
+  const s = App.state.settings;
+  const logo = s.logo || 'https://alhqyq.com/contents/newsm/18346_0.jpg';
+
+  const rows = App.state.inspectionItems.map(item => {
+    const val = record.statuses[item.item] || 'N/A';
+    const isGood = val !== 'N/A' && item.good.includes(val);
+    const icon = val === 'N/A' ? '—' : isGood ? '✓' : '✗';
+    return `<tr><td>${item.id}</td><td>${item.item}</td><td>${val}</td><td style="text-align:center;">${icon}</td></tr>`;
+  }).join('');
+
+  return `
+  <html dir="ltr"><head><style>
+    body{font-family:Georgia, serif;color:#000;margin:0;padding:20px;}
+    .report-header{display:flex;justify-content:space-between;align-items:center;border-bottom:3px double #000;padding-bottom:15px;margin-bottom:15px;}
+    .report-header img{width:80px;height:80px;object-fit:cover;border-radius:50%;}
+    .report-title{text-align:center;font-size:20px;font-weight:bold;}
+    .report-subtitle{text-align:center;font-size:14px;margin-top:5px;}
+    table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px;}
+    th{background:#eee;border:1px solid #000;padding:8px;text-align:left;}
+    td{border:1px solid #000;padding:6px 8px;}
+    .report-footer{margin-top:30px;display:flex;justify-content:space-between;font-size:13px;}
+    .signature-line{width:200px;border-top:1px solid #000;text-align:center;padding-top:5px;}
+    .report-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:15px;font-size:13px;}
+    .issues-box{margin:15px 0;padding:10px;border:1px solid #000;text-align:center;font-weight:bold;}
+    @media print{body{padding:0;}}
+  </style></head><body>
+    <div class="report-header">
+      <img src="${logo}" alt="Logo">
+      <div>
+        <div class="report-title">${s.hospitalName}</div>
+        <div class="report-subtitle">${s.department}</div>
+      </div>
+      <div style="font-size:11px;color:#555;">HVAC-DI-${record.date}-${record.unit}</div>
+    </div>
+
+    <div class="report-title" style="margin-bottom:15px;">DAILY HVAC UNIT INSPECTION REPORT</div>
+
+    <div class="report-meta">
+      <div><strong>Date:</strong> ${record.date}</div>
+      <div><strong>Shift:</strong> ${record.shift}</div>
+      <div><strong>Technician:</strong> ${record.technician}</div>
+      <div><strong>Unit:</strong> ${record.unit}</div>
+      <div><strong>Model:</strong> ${record.model}</div>
+      <div><strong>Serial:</strong> ${record.serial}</div>
+    </div>
+
+    <table>
+      <thead><tr><th>#</th><th>Inspection Item</th><th>Status</th><th style="width:40px;">✓/✗</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+
+    <div class="issues-box" style="background:${record.issueCount === 0 ? '#d9f2e1' : '#fbe0e2'};">
+      Issues Found: ${record.issueCount} &nbsp;|&nbsp; Overall Condition: ${record.overallCondition}
+    </div>
+
+    ${record.notes ? `<p><strong>Notes:</strong> ${record.notes}</p>` : ''}
+
+    <div class="report-footer">
+      <div class="signature-line">Technician Signature</div>
+      <div class="signature-line">Section Head: Eng. Ahmad Ali Bokar Nasib</div>
+      <div class="signature-line">Date: ${record.date}</div>
+    </div>
+
+    <p style="margin-top:20px;font-size:10px;color:#555;">Form Ref: HVAC-DI-${record.date}-${record.unit} &nbsp;|&nbsp; Printed: ${new Date().toLocaleString()}</p>
+  </body></html>`;
+};
+
+App.print.printRecord = function(id){
+  const r = App.db.getRecordById(id);
+  if(!r) return;
+  const html = App.print.generatePrintHTML(r);
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(()=>{w.print();}, 500);
+};
+
+function printCurrentRecord(){
+  const data = getFormData();
+  if(!data.unit){
+    showToast('⚠️ Select a Unit first');
+    return;
+  }
+  const html = App.print.generatePrintHTML(data);
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(()=>{w.print();}, 500);
+}
+
+function printRecord(id){
+  App.print.printRecord(id);
+}
+
+/* ========== DASHBOARD ========== */
+App.ui.renderDashboard = function(){
+  const container = document.getElementById('dashboard-container');
+  const records = App.db.loadAll();
+  const today = App.utils.formatDate(new Date());
+
+  const todayRecords = records.filter(r => r.date === today);
+  const totalToday = todayRecords.length;
+  const issuesToday = todayRecords.reduce((sum, r) => sum + r.issueCount, 0);
+  const unitsLogged = new Set(todayRecords.map(r => r.unit)).size;
+  const completionPct = Math.round((unitsLogged / App.state.units.length) * 100);
+
+  let html = '';
+
+  html += `
+  <div class="kpi-grid">
+    <div class="kpi-card"><h2>${totalToday}</h2><p>Total Today</p></div>
+    <div class="kpi-card"><h2 style="color:${issuesToday > 0 ? 'var(--red-text)' : 'var(--green-text)'};">${issuesToday}</h2><p>Issues Found</p></div>
+    <div class="kpi-card"><h2>${unitsLogged} / ${App.state.units.length}</h2><p>Units Logged</p></div>
+    <div class="kpi-card"><h2>${completionPct}%</h2><p>Completion</p></div>
+  </div>`;
+
+  html += `<div class="card"><div class="card-title">🏢 Units Status Board</div><div class="units-grid">`;
+  App.state.units.forEach(unit => {
+    const last = App.db.getLastForUnit(unit.name);
+    let borderClass = 'green';
+    let statusText = '✅ OK';
+    if(last){
+      if(last.issueCount === 0){borderClass = 'green'; statusText = '✅ OK';}
+      else if(last.issueCount <= 3){borderClass = 'amber'; statusText = '⚠️ ' + last.issueCount + ' issues';}
+      else{borderClass = 'red'; statusText = '🔴 ' + last.issueCount + ' issues';}
+    }else{
+      borderClass = 'green';
+      statusText = '📝 Not inspected';
+    }
+    html += `
+    <div class="unit-card ${borderClass}">
+      <div class="unit-name">${unit.name}</div>
+      <div class="unit-meta">Model: ${unit.model} | Serial: ${unit.serial}</div>
+      <div class="unit-meta" style="margin-top:5px;">
+        <span class="badge badge-${unit.priority.toLowerCase()}">${unit.priority}</span>
+        <span style="margin-left:8px;">${statusText}</span>
+        ${last ? `<span style="margin-left:8px;">📅 ${last.date}</span>` : ''}
+      </div>
+    </div>`;
+  });
+  html += `</div></div>`;
+
+  const recent = records.slice(0, 10);
+  html += `
+  <div class="card">
+    <div class="card-title">🕐 Recent Inspections</div>
+    <table class="history-table">
+      <thead><tr><th>Date</th><th>Shift</th><th>Technician</th><th>Unit</th><th>Issues</th><th>Condition</th></tr></thead>
+      <tbody>
+        ${recent.map(r => {
+          const shiftIcon = r.shift === 'A' ? '🟢' : r.shift === 'B' ? '🟡' : '🟠';
+          return `<tr><td>${r.date}</td><td>${shiftIcon} ${r.shift}</td><td>${r.technician}</td><td>${r.unit}</td><td style="font-weight:700;color:${r.issueCount > 0 ? 'var(--red-text)' : 'var(--green-text)'}">${r.issueCount === 0 ? '✅ 0' : '⚠️ ' + r.issueCount}</td><td>${r.overallCondition}</td></tr>`;
+        }).join('') || '<tr><td colspan="6" style="text-align:center;">No records</td></tr>'}
+      </tbody>
+    </table>
+  </div>`;
+
+  container.innerHTML = html;
+};
+
+/* ========== SETTINGS ========== */
+App.ui.renderSettings = function(){
+  const container = document.getElementById('settings-container');
+  const s = App.state.settings;
+
+  container.innerHTML = `
+    <div class="settings-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:20px;">
+      <div class="card">
+        <div class="card-title">🏥 Hospital Information</div>
+        <label style="display:block;margin-bottom:5px;font-weight:600;">Hospital Name</label>
+        <input type="text" id="set-hospital-name" value="${s.hospitalName}" style="width:100%;padding:10px;border:1px solid #ccc;border-radius:var(--radius);margin-bottom:15px;">
+        <label style="display:block;margin-bottom:5px;font-weight:600;">Department Title</label>
+        <input type="text" id="set-department" value="${s.department}" style="width:100%;padding:10px;border:1px solid #ccc;border-radius:var(--radius);margin-bottom:15px;">
+        <button class="btn btn-primary" onclick="saveSettings()">💾 Save Settings</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🖼️ Hospital Logo</div>
+        ${s.logo ? `<img src="${s.logo}" style="width:80px;height:80px;border-radius:50%;display:block;margin-bottom:10px;">` : '<p style="color:var(--amber-text);margin-bottom:10px;">No custom logo uploaded. Using default.</p>'}
+        <input type="file" id="logo-upload" accept="image/png,image/jpeg,image/svg+xml" style="display:block;margin-bottom:10px;">
+        <button class="btn btn-outline" onclick="clearLogo()">❌ Remove Logo</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🖨️ Print Settings</div>
+        <label style="display:flex;align-items:center;gap:10px;">
+          <input type="checkbox" id="set-print-arabic" ${s.printArabic ? 'checked' : ''} onchange="togglePrintArabic()">
+          <span>Show Arabic labels on print</span>
+        </label>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💾 Data Management</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <button class="btn btn-primary" onclick="App.db.exportJSON()">⬇️ Export All Data (JSON)</button>
+          <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importFile(event)">
+          <button class="btn btn-outline" onclick="document.getElementById('import-file').click()">⬆️ Import Data (JSON)</button>
+          <button class="btn btn-danger" onclick="confirmClearAll()">🗑 Clear All Data</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">ℹ️ About</div>
+        <p style="font-size:14px;line-height:1.8;">
+          <strong>Version:</strong> ${s.version}<br>
+          <strong>Department:</strong> HVAC Engineering & Maintenance<br>
+          <strong>Hospital:</strong> Abu Arish General Hospital<br>
+          <strong>Last Backup:</strong> ${s.lastBackup || 'Never'}
+        </p>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('logo-upload').addEventListener('change', function(e){
+    const file = e.target.files[0];
+    if(file){
+      const reader = new FileReader();
+      reader.onload = function(ev){
+        App.state.settings.logo = ev.target.result;
+        App.db.saveSettings(App.state.settings);
+        showToast('✅ Logo updated');
+        App.ui.renderSettings();
+        updateHeaderLogo();
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+};
+
+/* ========== SETTINGS FUNCTIONS ========== */
+function saveSettings(){
+  const name = document.getElementById('set-hospital-name').value.trim();
+  const dept = document.getElementById('set-department').value.trim();
+  App.state.settings.hospitalName = name || 'Abu Arish General Hospital';
+  App.state.settings.department = dept || 'Engineering & Maintenance — HVAC Section';
+  App.state.settings.lastBackup = new Date().toISOString();
+  App.db.saveSettings(App.state.settings);
+  updateHeaderLogo();
+  showToast('✅ Settings saved');
+}
+
+function togglePrintArabic(){
+  App.state.settings.printArabic = document.getElementById('set-print-arabic').checked;
+  App.db.saveSettings(App.state.settings);
+  showToast('✅ Print setting updated');
+}
+
+function clearLogo(){
+  App.state.settings.logo = 'https://alhqyq.com/contents/newsm/18346_0.jpg';
+  App.db.saveSettings(App.state.settings);
+  App.ui.renderSettings();
+  updateHeaderLogo();
+  showToast('✅ Logo reset to default');
+}
+
+function importFile(event){
+  const file = event.target.files[0];
+  if(file){
+    if(confirm('Import will REPLACE all current records. Continue?')){
+      App.db.importJSON(file);
+    }
+  }
+}
+
+function confirmClearAll(){
+  if(confirm('⚠️ Are you sure you want to delete ALL records and drafts? This cannot be undone.')){
+    App.db.clearAll();
+  }
+}
+
+function updateHeaderLogo(){
+  const sidebarLogo = document.getElementById('sidebar-logo-img');
+  if(sidebarLogo && App.state.settings.logo){
+    sidebarLogo.src = App.state.settings.logo;
+  }
+}
+
+/* ========== INIT ========== */
+function initApp(){
+  const savedSettings = App.db.loadSettings();
+  if(Object.keys(savedSettings).length > 0){
+    App.state.settings = {...App.state.settings, ...savedSettings};
+  }
+  App.db.loadAll();
+  updateHeaderLogo();
+  updateClock();
+  App.ui.renderForm();
+}
+
+initApp();
+</script>
+</body>
+  </html> 
